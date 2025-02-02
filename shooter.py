@@ -29,7 +29,11 @@ def draw_bg():
 #define player action variables 
 moving_left = False
 moving_right = False
+shoot = False
 
+#load images 
+#bullet image 
+bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
 
 
 class Soldier(pygame.sprite.Sprite):
@@ -125,7 +129,20 @@ class Soldier(pygame.sprite.Sprite):
     
     def draw(self):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
-    
+
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 10
+        self.image = bullet_img
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.direction = direction 
+
+#create bullet sprite groups 
+bullet_group = pygame.sprite.Group()
+
 
 player = Soldier('player', 200, 200, 3, 5)
 enemy = Soldier('enemy', 400, 200, 3, 5)
@@ -141,9 +158,17 @@ while run:
     player.update_animation() 
     player.draw()
     enemy.draw()
+
+    #update and draw groups 
+    bullet_group.update()
+    bullet_group.draw(screen)
     
     #update player actions
     if player.alive:
+        #shoot bullets
+        if shoot:
+            bullet = Bullet(player.rect.centerx + (0.6 * player.rect.size[0]), player.rect.centery, player.direction)
+            bullet_group.add(bullet)
         if player.in_air:
             player.update_action(2) #2 = jump
         elif moving_left or moving_right:
@@ -152,6 +177,9 @@ while run:
             player.update_action(0) #0 = idle
         
         player.move(moving_left, moving_right)
+
+    
+
     
 
     for event in pygame.event.get():
@@ -164,6 +192,8 @@ while run:
                 moving_left = True
             if event.key == pygame.K_RIGHT:
                 moving_right = True
+            if event.key == pygame.K_SPACE:
+                shoot = True    
             if event.key == pygame.K_UP and player.alive:
                 player.jump = True
             if event.key == pygame.K_ESCAPE:
@@ -175,6 +205,8 @@ while run:
                 moving_left = False
             if event.key == pygame.K_RIGHT:
                 moving_right = False
+            if event.key == pygame.K_SPACE:
+                shoot = False
 
     pygame.display.update()           
 
