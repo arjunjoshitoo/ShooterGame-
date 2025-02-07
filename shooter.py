@@ -58,12 +58,13 @@ class Soldier(pygame.sprite.Sprite):
         self.update_time = pygame.time.get_ticks()
 
         
-        #load al images of the players 
+        #load all images of the players 
         animation_types = ['Idle', 'Run', 'Jump', 'Death']
+        #count the number of files in the folder 
         for animation in animation_types:
-            #reset tempoarary list of images 
+            #reset temporary list of images 
             temp_list = []
-            #count the number of files in the folder 
+            #count number of files in the folder 
             num_of_frames = len(os.listdir(f"img/{self.char_type}/{animation}"))
             for i in range(num_of_frames):
                 img = pygame.image.load(f"img/{self.char_type}/{animation}/{i}.png").convert_alpha()
@@ -172,7 +173,10 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.direction = direction
+        
+
     
+
     def update(self):
         #move bullet 
         self.rect.x += (self.direction * self.speed)
@@ -264,6 +268,8 @@ while run:
     pygame.display.update()           
 
 pygame.quit()
+
+
 
 
 
