@@ -13,14 +13,14 @@ clock = pygame.time.Clock()
 FPS = 60
 
 #define colours
-BG = (144, 201, 120)
+#BG = (144, 201, 120)
 RED = (255, 0, 0)
-#BG = (0, 0 , 0)
+BG = (0, 0 , 0)
 
 #define game variables 
 GRAVITY = 0.75
 
-#draw bg 
+#draw bg
 def draw_bg():
     screen.fill(BG)
     pygame.draw.line(screen, RED, (0, 300), (SCREEN_WIDTH, 300))
@@ -33,7 +33,7 @@ shoot = False
 grenade = False
 grenade_thrown = False
 
-#load images 
+#load images
 #bullet image 
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
 
@@ -43,12 +43,13 @@ grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
 
 
 class Soldier(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, scale, speed, ammo):
+    def __init__(self, char_type, x, y, scale, speed, ammo, grenades):
         self.alive = True 
         self.speed = speed
         self.ammo = ammo
         self.star_ammo = ammo
         self.shoot_cooldown = 0
+        self.grenades = grenades
         self.health = 100
         self.max_health = self.health 
         self.char_type = char_type
@@ -219,8 +220,8 @@ bullet_group = pygame.sprite.Group()
 greande_group = pygame.sprite.Group()
 
 
-player = Soldier('player', 200, 200, 3, 5, 20)
-enemy = Soldier('enemy', 400, 250, 3, 5, 20)
+player = Soldier('player', 200, 200, 3, 5, 20, 5)
+enemy = Soldier('enemy', 400, 250, 3, 5, 20, 0)
 
 
 run = True
@@ -250,11 +251,14 @@ while run:
         if shoot:
             player.shoot()
         #shoot grenades
-        elif grenade and grenade_thrown == False:
+        elif grenade and grenade_thrown == False and player.grenades > 0:
             grenade = Grenade(player.rect.centerx + (0.5 * player.rect.size[0] * player.direction),\
-                               player.rect.top , player.direction)
+                player.rect.top , player.direction) 
             greande_group.add(grenade)
+            #reduce grenades 
+            player.grenades -= 1
             grenade_thrown = True
+            print(player.grenades)
         if player.in_air:
             player.update_action(2) #2 = jump
         elif moving_left or moving_right:
@@ -302,15 +306,6 @@ while run:
     pygame.display.update()           
 
 pygame.quit()
-
-
-
-
-
-
-
-
-
 
 
 
